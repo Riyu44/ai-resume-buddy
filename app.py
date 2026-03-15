@@ -30,7 +30,7 @@ def sarvam_chat(user_content: str) -> str:
         payload = {
             "model": SARVAM_MODEL,
             "messages": [{"role": "user", "content": user_content}],
-            "max_tokens": 2048,
+            "max_tokens": 9000,
             "temperature": 0.2,
         }
         resp = requests.post(SARVAM_API_URL, headers=headers, json=payload, timeout=60)
