@@ -35,7 +35,6 @@ def sarvam_chat(user_content: str) -> str:
     data = resp.json()
     content = data["choices"][0]["message"]["content"]
     if not content:
-        print(data)
         st.error("Sarvam AI returned an empty response.")
         st.write(data)
         st.stop()
