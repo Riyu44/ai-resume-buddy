@@ -1,9 +1,11 @@
+from math import log
 import streamlit as st
 import requests
 import PyPDF2
 import re
 import os
 from dotenv import load_dotenv
+import logging
 
 load_dotenv()
 
@@ -11,7 +13,7 @@ SARVAM_API_KEY = os.getenv("SARVAM_API_KEY")
 SARVAM_API_URL = os.getenv("SARVAM_API_URL", "https://api.sarvam.ai/v1/chat/completions")
 SARVAM_MODEL   = os.getenv("SARVAM_MODEL", "sarvam-30b")
 
-
+logging.basicConfig(level=logging.INFO,filename='app.log',format='%(asctime)s - %(levelname)s - %(message)s')
 # ── PDF extraction ────────────────────────────────────────────────────────────
 def extract_text_from_pdf(uploaded_file):
     reader = PyPDF2.PdfReader(uploaded_file)
@@ -20,25 +22,29 @@ def extract_text_from_pdf(uploaded_file):
 
 # ── Sarvam API call ───────────────────────────────────────────────────────────
 def sarvam_chat(user_content: str) -> str:
-    headers = {
-        "Authorization": f"Bearer {SARVAM_API_KEY}",
-        "Content-Type": "application/json",
-    }
-    payload = {
-        "model": SARVAM_MODEL,
-        "messages": [{"role": "user", "content": user_content}],
-        "max_tokens": 2048,
-        "temperature": 0.2,
-    }
-    resp = requests.post(SARVAM_API_URL, headers=headers, json=payload, timeout=60)
-    resp.raise_for_status()
-    data = resp.json()
-    content = data["choices"][0]["message"]["content"]
-    if not content:
-        st.error("Sarvam AI returned an empty response.")
-        st.write(data)
-        st.stop()
-    return content.strip()
+    try:
+        headers = {
+            "Authorization": f"Bearer {SARVAM_API_KEY}",
+            "Content-Type": "application/json",
+        }
+        payload = {
+            "model": SARVAM_MODEL,
+            "messages": [{"role": "user", "content": user_content}],
+            "max_tokens": 2048,
+            "temperature": 0.2,
+        }
+        resp = requests.post(SARVAM_API_URL, headers=headers, json=payload, timeout=60)
+        resp.raise_for_status()
+        data = resp.json()
+        content = data["choices"][0]["message"]["content"]
+        if not content:
+            logging.error(f"Sarvam AI returned an empty response,{data}")
+            st.error("Sarvam AI returned an empty response.")
+            st.write(data)
+            st.stop()
+        return content.strip()
+    except Exception as e:
+        logging.error(f"Error calling Sarvam API: {e}")
 
 
 # ── Delimiter-based parser ────────────────────────────────────────────────────
