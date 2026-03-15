@@ -210,6 +210,6 @@ if st.button("🔍  Analyse Fit", type="primary", use_container_width=True):
         for flag in result["red_flags"]:
             st.warning(flag)
 
-    # ── Debug expander (hidden by default) ───────────────────────────────────
-    with st.expander("🔧 Debug — raw model output"):
-        st.code(result["_raw"])
+    # # ── Debug expander (hidden by default) ───────────────────────────────────
+    # with st.expander("🔧 Debug — raw model output"):
+    #     st.code(result["_raw"])
