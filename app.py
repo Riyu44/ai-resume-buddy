@@ -105,8 +105,11 @@ Second concern a recruiter might have.
 {jd_text}
 """
     raw = sarvam_chat(prompt)
+    clean_raw = raw.strip()
+    clean_raw = clean_raw.removeprefix("```json").removesuffix("```").strip()
+    clean_raw = clean_raw.removeprefix("```").strip()
 
-    fit_score_str = extract_section(raw, "fit_score")
+    fit_score_str = extract_section(clean_raw, "fit_score")
     try:
         fit_score = int(re.search(r"\d+", fit_score_str).group())
     except (AttributeError, ValueError):
