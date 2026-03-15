@@ -32,6 +32,10 @@ def sarvam_chat(user_content: str) -> str:
     resp = requests.post(SARVAM_API_URL, headers=headers, json=payload, timeout=60)
     resp.raise_for_status()
     data = resp.json()
+    if data["choices"][0]["message"]["content"] is None:
+        st.error("Sarvam AI returned an empty response.")
+        st.write(data) 
+        return ""
     return data["choices"][0]["message"]["content"].strip()
 
 
